@@ -1,0 +1,43 @@
+name: Actualizar lista de videos
+
+on:
+  push:
+    paths:
+      - 'images/video/**'
+  workflow_dispatch:
+
+jobs:
+  update-videos:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Generar videos.json
+        run: |
+          echo "[" > videos.json
+          first=true
+          for file in images/video/*; do
+            filename=$(basename "$file")
+            # Solo archivos de video
+            if [[ "$filename" =~ \.(mp4|webm|ogg|mov|mkv|avi)$ ]]; then
+              if [ "$first" = true ]; then
+                first=false
+              else
+                echo "," >> videos.json
+              fi
+              echo "  \"$filename\"" >> videos.json
+            fi
+          done
+          echo "]" >> videos.json
+          cat videos.json
+
+      - name: Commit y Push
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          git add videos.json
+          git diff --cached --quiet || git commit -m "🎬 Actualizar lista de videos automáticamente"
+          git push
+
