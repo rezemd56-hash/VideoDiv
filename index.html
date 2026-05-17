@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VideoDiv</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #1a0a2e 0%, #0a0a0a 100%);
+            border-bottom: 2px solid #6b21a8;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .logo-container img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 8px #a855f7);
+        }
+
+        .logo-text {
+            font-size: 26px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #a855f7, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 600px;
+            margin: 0 40px;
+            display: flex;
+        }
+
+        .search-container input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #6b21a8;
+            border-radius: 25px 0 0 25px;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-container input:focus {
+            border-color: #a855f7;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+        }
+
+        .search-container input::placeholder {
+            color: #525252;
+        }
+
+        .search-container button {
+            padding: 12px 24px;
+            border: 2px solid #6b21a8;
+            border-left: none;
+            border-radius: 0 25px 25px 0;
+            background: linear-gradient(135deg, #6b21a8, #7e22ce);
+            color: #ffffff;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .search-container button:hover {
+            background: linear-gradient(135deg, #7e22ce, #a855f7);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+        }
+
+        /* ===== MAIN ===== */
+        .main-content {
+            padding: 25px 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 22px;
+            background: linear-gradient(180deg, #a855f7, #6b21a8);
+            border-radius: 2px;
+        }
+
+        /* ===== GRID ===== */
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        /* ===== VIDEO CARD ===== */
+        .video-card {
+            background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            border-color: #6b21a8;
+            box-shadow: 0 10px 40px rgba(107, 33, 168, 0.3);
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: linear-gradient(135deg, #1a0a2e, #0a0a0a);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .video-thumbnail video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .play-icon {
+            position: absolute;
+            font-size: 50px;
+            color: #ffffff;
+            text-shadow: 0 0 20px #a855f7;
+            pointer-events: none;
+            transition: transform 0.3s;
+        }
+
+        .video-card:hover .play-icon {
+            transform: scale(1.2);
+        }
+
+        .video-info {
+            padding: 15px;
+        }
+
+        .video-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.95);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active {
+            display: block;
+        }
+
+        .modal-content {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .modal-close {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            background: rgba(107, 33, 168, 0.3);
+            border: 1px solid #6b21a8;
+            color: #ffffff;
+            font-size: 24px;
+            cursor: pointer;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 1001;
+        }
+
+        .modal-close:hover {
+            background: #6b21a8;
+            transform: rotate(90deg);
+        }
+
+        .modal-video-container {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid #6b21a8;
+            box-shadow: 0 0 40px rgba(107, 33, 168, 0.3);
+        }
+
+        .modal-video-container video {
+            width: 100%;
+            max-height: 70vh;
+            display: block;
+        }
+
+        .modal-title {
+            margin-top: 20px;
+            font-size: 22px;
+            color: #ffffff;
+        }
+
+        /* ===== ESTADOS ===== */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #a855f7;
+            font-size: 18px;
+            grid-column: 1 / -1;
+        }
+
+        .loading::after {
+            content: '';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 80px 20px;
+            color: #525252;
+            grid-column: 1 / -1;
+        }
+
+        .no-results-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .error {
+            text-align: center;
+            padding: 60px 20px;
+            color: #ef4444;
+            grid-column: 1 / -1;
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #6b21a8;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #7e22ce;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .header {
+                flex-wrap: wrap;
+                padding: 10px 15px;
+            }
+
+            .search-container {
+                order: 3;
+                flex-basis: 100%;
+                margin: 10px 0 0 0;
+                max-width: none;
+            }
+
+            .main-content {
+                padding: 15px;
+            }
+
+            .videos-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .modal-content {
+                margin: 10px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <a href="#" class="logo-container" onclick="resetSearch(); return false;">
+            <img src="images/logo.png" alt="VideoDiv Logo">
+            <span class="logo-text">VideoDiv</span>
+        </a>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar videos..." autocomplete="off">
+            <button onclick="searchVideos()">🔍</button>
+        </div>
+        <div style="width: 40px;"></div>
+    </header>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main-content">
+        <h2 class="section-title" id="sectionTitle">Todos los videos</h2>
+        <div class="videos-grid" id="videosGrid">
+            <div class="loading">Cargando videos</div>
+        </div>
+    </main>
+
+    <!-- ===== MODAL ===== -->
+    <div class="modal-overlay" id="videoModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+            <div class="modal-video-container">
+                <video id="modalVideo" controls autoplay></video>
+            </div>
+            <h3 class="modal-title" id="modalTitle"></h3>
+        </div>
+    </div>
+
+    <script>
+        const videosGrid = document.getElementById('videosGrid');
+        const sectionTitle = document.getElementById('sectionTitle');
+        const searchInput = document.getElementById('searchInput');
+        let allVideos = [];
+
+        // ==================== CARGAR VIDEOS DESDE JSON ====================
+        async function loadVideos() {
+            try {
+                // Intentar cargar videos.json generado por GitHub Actions
+                const response = await fetch('videos.json');
+                
+                if (!response.ok) {
+                    throw new Error('No se encontró videos.json');
+                }
+
+                allVideos = await response.json();
+                renderVideos(allVideos);
+
+            } catch (error) {
+                console.log('Error cargando videos.json:', error);
+                
+                // Fallback: intentar detectar videos manualmente
+                videosGrid.innerHTML = '<div class="loading">Detectando videos...</div>';
+                
+                const detected = await detectVideosManually();
+                
+                if (detected.length > 0) {
+                    allVideos = detected;
+                    renderVideos(allVideos);
+                } else {
+                    videosGrid.innerHTML = `
+                        <div class="error">
+                            <div class="no-results-icon">⚠️</div>
+                            <h3>No se pudieron cargar los videos</h3>
+                            <p>Asegúrate de que los videos estén en images/video/</p>
+                            <p style="margin-top:10px; font-size:14px; color:#525252;">
+                                Formato esperado: Nombre-Numero.mp4
+                            </p>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // ==================== DETECCIÓN MANUAL (FALLBACK) ====================
+        async function detectVideosManually() {
+            const extensions = ['.mp4', '.webm', '.ogg', '.mov'];
+            const prefixes = ['Pam', 'Video', 'Vlog', 'Tutorial', 'Musica', 'Clip', 'Movie', 'Film', 'Cancion', 'Episodio'];
+            const possibleVideos = [];
+
+            // Generar posibles nombres
+            for (let prefix of prefixes) {
+                for (let i = 1; i <= 100; i++) {
+                    for (let ext of extensions) {
+                        possibleVideos.push(`${prefix}-${i}${ext}`);
+                    }
+                }
+            }
+
+            // Verificar cuáles existen
+            const existingVideos = [];
+            
+            for (let video of possibleVideos) {
+                try {
+                    const response = await fetch(`images/video/${video}`, { method: 'HEAD' });
+                    if (response.ok) {
+                        existingVideos.push(video);
+                    }
+                } catch (e) {
+                    // No existe
+                }
+            }
+
+            return existingVideos;
+        }
+
+        // ==================== EXTRAER TÍTULO ====================
+        function getTitle(filename) {
+            let name = filename.replace(/\.[^/.]+$/, "");
+            name = name.replace(/-/g, " ");
+            return name;
+        }
+
+        // ==================== RENDERIZAR ====================
+        function renderVideos(videoList) {
+            videosGrid.innerHTML = '';
+
+            if (videoList.length === 0) {
+                videosGrid.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-icon">🔍</div>
+                        <h3>No se encontraron videos</h3>
+                    </div>
+                `;
+                return;
+            }
+
+            videoList.forEach((filename, index) => {
+                const title = getTitle(filename);
+                const videoPath = `images/video/${filename}`;
+
+                const card = document.createElement('div');
+                card.className = 'video-card';
+                card.style.animationDelay = `${index * 0.05}s`;
+                card.onclick = () => openModal(filename, title);
+
+                card.innerHTML = `
+                    <div class="video-thumbnail">
+                        <video src="${videoPath}" muted preload="metadata"></video>
+                        <div class="play-icon">▶</div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">${title}</h3>
+                    </div>
+                `;
+
+                videosGrid.appendChild(card);
+            });
+        }
+
+        // ==================== BÚSQUEDA ====================
+        function searchVideos() {
+            const query = searchInput.value.toLowerCase().trim();
+
+            if (!query) {
+                sectionTitle.textContent = 'Todos los videos';
+                renderVideos(allVideos);
+                return;
+            }
+
+            const filtered = allVideos.filter(filename => {
+                const title = getTitle(filename).toLowerCase();
+                return title.includes(query);
+            });
+
+            sectionTitle.textContent = `Resultados para "${searchInput.value}"`;
+            renderVideos(filtered);
+        }
+
+        function resetSearch() {
+            searchInput.value = '';
+            sectionTitle.textContent = 'Todos los videos';
+            renderVideos(allVideos);
+        }
+
+        // ==================== MODAL ====================
+        function openModal(filename, title) {
+            const modal = document.getElementById('videoModal');
+            const modalVideo = document.getElementById('modalVideo');
+            const modalTitle = document.getElementById('modalTitle');
+            const videoPath = `images/video/${filename}`;
+
+            modalVideo.src = videoPath;
+            modalTitle.textContent = title;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('videoModal');
+            const modalVideo = document.getElementById('modalVideo');
+
+            modal.classList.remove('active');
+            modalVideo.pause();
+            modalVideo.src = '';
+            document.body.style.overflow = '';
+        }
+
+        // ==================== EVENTOS ====================
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') searchVideos();
+        });
+
+        document.getElementById('videoModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // ==================== INICIALIZAR ====================
+        loadVideos();
+    </script>
+
+</body>
+</html>
