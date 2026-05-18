@@ -20,10 +20,9 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
-            overflow-x: hidden;
         }
 
-        /* ===== PARTÍCULAS DE FONDO ===== */
+        /* ===== PARTÍCULAS ===== */
         .particles {
             position: fixed;
             top: 0;
@@ -62,7 +61,7 @@
             }
         }
 
-        /* ===== TARJETA DE PERFIL ===== */
+        /* ===== PERFIL ===== */
         .profile-container {
             position: relative;
             z-index: 1;
@@ -90,7 +89,6 @@
             box-shadow: 0 25px 80px rgba(107, 33, 168, 0.4);
         }
 
-        /* ===== HEADER DEL PERFIL ===== */
         .profile-header {
             background: linear-gradient(135deg, #6b21a8, #1a0a2e);
             padding: 50px 30px 70px;
@@ -169,7 +167,6 @@
             z-index: 1;
         }
 
-        /* ===== CUERPO DEL PERFIL ===== */
         .profile-body {
             padding: 40px 30px 30px;
             position: relative;
@@ -275,7 +272,7 @@
             transform: translateX(5px);
         }
 
-        /* ===== REDES SOCIALES ===== */
+        /* ===== REDES ===== */
         .social-section {
             margin-bottom: 20px;
         }
@@ -339,7 +336,6 @@
             border-color: #9146ff;
         }
 
-        /* ===== FOOTER ===== */
         .profile-footer {
             text-align: center;
             padding: 25px;
@@ -359,7 +355,6 @@
             50% { transform: scale(1.2); }
         }
 
-        /* ===== BOTÓN VOLVER ===== */
         .back-btn {
             position: fixed;
             top: 20px;
@@ -385,7 +380,6 @@
             box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
         }
 
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 480px) {
             .profile-header {
                 padding: 40px 20px 60px;
@@ -418,13 +412,10 @@
 </head>
 <body>
 
-    <!-- Partículas -->
     <div class="particles" id="particles"></div>
 
-    <!-- Botón Volver -->
     <a href="../index.html" class="back-btn">← Volver a VideoDiv</a>
 
-    <!-- Perfil -->
     <div class="profile-container">
         <div class="profile-card">
             
@@ -437,7 +428,6 @@
 
             <div class="profile-body">
                 
-                <!-- WhatsApp -->
                 <div class="whatsapp-section">
                     <div class="section-title">📱 WhatsApp</div>
                     
@@ -460,7 +450,6 @@
                     </a>
                 </div>
 
-                <!-- Redes Sociales -->
                 <div class="social-section">
                     <div class="section-title">🌐 Redes Sociales</div>
                     <div class="social-grid">
@@ -489,7 +478,6 @@
     </div>
 
     <script>
-        // Crear partículas
         function createParticles() {
             const container = document.getElementById('particles');
             for (let i = 0; i < 30; i++) {
