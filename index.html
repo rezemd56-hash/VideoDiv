@@ -23,31 +23,33 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 30px;
+            padding: 12px 25px;
             background: linear-gradient(135deg, #1a0a2e 0%, #0a0a0a 100%);
             border-bottom: 2px solid #6b21a8;
             position: sticky;
             top: 0;
             z-index: 100;
+            gap: 15px;
         }
 
         .logo-container {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             cursor: pointer;
             text-decoration: none;
+            flex-shrink: 0;
         }
 
         .logo-container img {
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             object-fit: contain;
             filter: drop-shadow(0 0 8px #a855f7);
         }
 
         .logo-text {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: bold;
             background: linear-gradient(135deg, #a855f7, #ffffff);
             -webkit-background-clip: text;
@@ -57,19 +59,18 @@
 
         .search-container {
             flex: 1;
-            max-width: 600px;
-            margin: 0 40px;
+            max-width: 500px;
             display: flex;
         }
 
         .search-container input {
             flex: 1;
-            padding: 12px 20px;
+            padding: 10px 18px;
             border: 2px solid #6b21a8;
             border-radius: 25px 0 0 25px;
             background-color: #1a1a1a;
             color: #ffffff;
-            font-size: 15px;
+            font-size: 14px;
             outline: none;
             transition: all 0.3s;
         }
@@ -84,20 +85,53 @@
         }
 
         .search-container button {
-            padding: 12px 24px;
+            padding: 10px 20px;
             border: 2px solid #6b21a8;
             border-left: none;
             border-radius: 0 25px 25px 0;
             background: linear-gradient(135deg, #6b21a8, #7e22ce);
             color: #ffffff;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             transition: all 0.3s;
         }
 
         .search-container button:hover {
             background: linear-gradient(135deg, #7e22ce, #a855f7);
             box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+        }
+
+        /* ===== BOTÓN CREADOR ===== */
+        .creator-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #6b21a8, #7e22ce);
+            border: 2px solid #a855f7;
+            border-radius: 25px;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex-shrink: 0;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+        }
+
+        .creator-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(168, 85, 247, 0.6);
+            background: linear-gradient(135deg, #7e22ce, #a855f7);
+        }
+
+        .creator-btn img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ffffff;
         }
 
         /* ===== MAIN ===== */
@@ -124,7 +158,6 @@
             border-radius: 2px;
         }
 
-        /* ===== GRID ===== */
         .videos-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -198,7 +231,7 @@
             overflow: hidden;
         }
 
-        /* ===== MODAL ===== */
+        /* ===== MODAL VIDEO ===== */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -325,15 +358,27 @@
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .header {
-                flex-wrap: wrap;
                 padding: 10px 15px;
+                gap: 10px;
+            }
+
+            .logo-text {
+                font-size: 20px;
             }
 
             .search-container {
                 order: 3;
                 flex-basis: 100%;
-                margin: 10px 0 0 0;
                 max-width: none;
+                margin: 0;
+            }
+
+            .creator-btn span {
+                display: none;
+            }
+
+            .creator-btn {
+                padding: 6px 10px;
             }
 
             .main-content {
@@ -360,11 +405,16 @@
             <img src="images/logo.png" alt="VideoDiv Logo">
             <span class="logo-text">VideoDiv</span>
         </a>
+        
         <div class="search-container">
             <input type="text" id="searchInput" placeholder="Buscar videos..." autocomplete="off">
             <button onclick="searchVideos()">🔍</button>
         </div>
-        <div style="width: 40px;"></div>
+        
+        <a href="creador/creador.html" class="creator-btn" target="_blank">
+            <img src="creador/perfil.png" alt="Creador">
+            <span>Creador</span>
+        </a>
     </header>
 
     <!-- ===== MAIN ===== -->
@@ -375,7 +425,7 @@
         </div>
     </main>
 
-    <!-- ===== MODAL ===== -->
+    <!-- ===== MODAL VIDEO ===== -->
     <div class="modal-overlay" id="videoModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal()">✕</button>
@@ -392,27 +442,14 @@
         const searchInput = document.getElementById('searchInput');
         let allVideos = [];
 
-        // ==================== CARGAR VIDEOS DESDE JSON ====================
         async function loadVideos() {
             try {
-                // Intentar cargar videos.json generado por GitHub Actions
                 const response = await fetch('videos.json');
-                
-                if (!response.ok) {
-                    throw new Error('No se encontró videos.json');
-                }
-
+                if (!response.ok) throw new Error('No se encontró videos.json');
                 allVideos = await response.json();
                 renderVideos(allVideos);
-
             } catch (error) {
-                console.log('Error cargando videos.json:', error);
-                
-                // Fallback: intentar detectar videos manualmente
-                videosGrid.innerHTML = '<div class="loading">Detectando videos...</div>';
-                
                 const detected = await detectVideosManually();
-                
                 if (detected.length > 0) {
                     allVideos = detected;
                     renderVideos(allVideos);
@@ -421,23 +458,18 @@
                         <div class="error">
                             <div class="no-results-icon">⚠️</div>
                             <h3>No se pudieron cargar los videos</h3>
-                            <p>Asegúrate de que los videos estén en images/video/</p>
-                            <p style="margin-top:10px; font-size:14px; color:#525252;">
-                                Formato esperado: Nombre-Numero.mp4
-                            </p>
+                            <p>Agrega videos en images/video/ con formato: Nombre-Numero.mp4</p>
                         </div>
                     `;
                 }
             }
         }
 
-        // ==================== DETECCIÓN MANUAL (FALLBACK) ====================
         async function detectVideosManually() {
             const extensions = ['.mp4', '.webm', '.ogg', '.mov'];
             const prefixes = ['Pam', 'Video', 'Vlog', 'Tutorial', 'Musica', 'Clip', 'Movie', 'Film', 'Cancion', 'Episodio'];
             const possibleVideos = [];
 
-            // Generar posibles nombres
             for (let prefix of prefixes) {
                 for (let i = 1; i <= 100; i++) {
                     for (let ext of extensions) {
@@ -446,34 +478,24 @@
                 }
             }
 
-            // Verificar cuáles existen
             const existingVideos = [];
-            
             for (let video of possibleVideos) {
                 try {
                     const response = await fetch(`images/video/${video}`, { method: 'HEAD' });
-                    if (response.ok) {
-                        existingVideos.push(video);
-                    }
-                } catch (e) {
-                    // No existe
-                }
+                    if (response.ok) existingVideos.push(video);
+                } catch (e) {}
             }
-
             return existingVideos;
         }
 
-        // ==================== EXTRAER TÍTULO ====================
         function getTitle(filename) {
             let name = filename.replace(/\.[^/.]+$/, "");
             name = name.replace(/-/g, " ");
             return name;
         }
 
-        // ==================== RENDERIZAR ====================
         function renderVideos(videoList) {
             videosGrid.innerHTML = '';
-
             if (videoList.length === 0) {
                 videosGrid.innerHTML = `
                     <div class="no-results">
@@ -487,7 +509,6 @@
             videoList.forEach((filename, index) => {
                 const title = getTitle(filename);
                 const videoPath = `images/video/${filename}`;
-
                 const card = document.createElement('div');
                 card.className = 'video-card';
                 card.style.animationDelay = `${index * 0.05}s`;
@@ -502,26 +523,21 @@
                         <h3 class="video-title">${title}</h3>
                     </div>
                 `;
-
                 videosGrid.appendChild(card);
             });
         }
 
-        // ==================== BÚSQUEDA ====================
         function searchVideos() {
             const query = searchInput.value.toLowerCase().trim();
-
             if (!query) {
                 sectionTitle.textContent = 'Todos los videos';
                 renderVideos(allVideos);
                 return;
             }
-
             const filtered = allVideos.filter(filename => {
                 const title = getTitle(filename).toLowerCase();
                 return title.includes(query);
             });
-
             sectionTitle.textContent = `Resultados para "${searchInput.value}"`;
             renderVideos(filtered);
         }
@@ -532,14 +548,11 @@
             renderVideos(allVideos);
         }
 
-        // ==================== MODAL ====================
         function openModal(filename, title) {
             const modal = document.getElementById('videoModal');
             const modalVideo = document.getElementById('modalVideo');
             const modalTitle = document.getElementById('modalTitle');
-            const videoPath = `images/video/${filename}`;
-
-            modalVideo.src = videoPath;
+            modalVideo.src = `images/video/${filename}`;
             modalTitle.textContent = title;
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -548,14 +561,12 @@
         function closeModal() {
             const modal = document.getElementById('videoModal');
             const modalVideo = document.getElementById('modalVideo');
-
             modal.classList.remove('active');
             modalVideo.pause();
             modalVideo.src = '';
             document.body.style.overflow = '';
         }
 
-        // ==================== EVENTOS ====================
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') searchVideos();
         });
@@ -568,7 +579,6 @@
             if (e.key === 'Escape') closeModal();
         });
 
-        // ==================== INICIALIZAR ====================
         loadVideos();
     </script>
 
