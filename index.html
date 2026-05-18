@@ -307,17 +307,6 @@
             grid-column: 1 / -1;
         }
 
-        .loading::after {
-            content: '';
-            animation: dots 1.5s infinite;
-        }
-
-        @keyframes dots {
-            0%, 20% { content: '.'; }
-            40% { content: '..'; }
-            60%, 100% { content: '...'; }
-        }
-
         .no-results {
             text-align: center;
             padding: 80px 20px;
@@ -421,7 +410,7 @@
     <main class="main-content">
         <h2 class="section-title" id="sectionTitle">Todos los videos</h2>
         <div class="videos-grid" id="videosGrid">
-            <div class="loading">Cargando videos</div>
+            <div class="loading">Cargando videos...</div>
         </div>
     </main>
 
@@ -449,43 +438,17 @@
                 allVideos = await response.json();
                 renderVideos(allVideos);
             } catch (error) {
-                const detected = await detectVideosManually();
-                if (detected.length > 0) {
-                    allVideos = detected;
-                    renderVideos(allVideos);
-                } else {
-                    videosGrid.innerHTML = `
-                        <div class="error">
-                            <div class="no-results-icon">⚠️</div>
-                            <h3>No se pudieron cargar los videos</h3>
-                            <p>Agrega videos en images/video/ con formato: Nombre-Numero.mp4</p>
-                        </div>
-                    `;
-                }
+                videosGrid.innerHTML = `
+                    <div class="error">
+                        <div class="no-results-icon">⚠️</div>
+                        <h3>Error al cargar videos</h3>
+                        <p>Crea el archivo videos.json en la raíz con los nombres de tus videos</p>
+                        <p style="margin-top:10px; font-size:14px; color:#525252;">
+                            Ejemplo: ["Pam-1.mp4", "Video-1.mp4"]
+                        </p>
+                    </div>
+                `;
             }
-        }
-
-        async function detectVideosManually() {
-            const extensions = ['.mp4', '.webm', '.ogg', '.mov'];
-            const prefixes = ['Pam', 'Video', 'Vlog', 'Tutorial', 'Musica', 'Clip', 'Movie', 'Film', 'Cancion', 'Episodio'];
-            const possibleVideos = [];
-
-            for (let prefix of prefixes) {
-                for (let i = 1; i <= 100; i++) {
-                    for (let ext of extensions) {
-                        possibleVideos.push(`${prefix}-${i}${ext}`);
-                    }
-                }
-            }
-
-            const existingVideos = [];
-            for (let video of possibleVideos) {
-                try {
-                    const response = await fetch(`images/video/${video}`, { method: 'HEAD' });
-                    if (response.ok) existingVideos.push(video);
-                } catch (e) {}
-            }
-            return existingVideos;
         }
 
         function getTitle(filename) {
@@ -500,7 +463,8 @@
                 videosGrid.innerHTML = `
                     <div class="no-results">
                         <div class="no-results-icon">🔍</div>
-                        <h3>No se encontraron videos</h3>
+                        <h3>No hay videos</h3>
+                        <p>Agrega videos a videos.json</p>
                     </div>
                 `;
                 return;
@@ -584,3 +548,4 @@
 
 </body>
 </html>
+
