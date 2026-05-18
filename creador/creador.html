@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creador - VideoDiv</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 50%, #0a0a0a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* ===== PARTÍCULAS DE FONDO ===== */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #a855f7;
+            border-radius: 50%;
+            opacity: 0;
+            animation: float 8s infinite;
+        }
+
+        @keyframes float {
+            0% {
+                opacity: 0;
+                transform: translateY(100vh) scale(0);
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1.5);
+            }
+        }
+
+        /* ===== TARJETA DE PERFIL ===== */
+        .profile-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 500px;
+            animation: slideUp 0.8s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(60px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .profile-card {
+            background: linear-gradient(145deg, #1a0a2e, #0a0a0a);
+            border: 2px solid #6b21a8;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 25px 80px rgba(107, 33, 168, 0.4);
+        }
+
+        /* ===== HEADER DEL PERFIL ===== */
+        .profile-header {
+            background: linear-gradient(135deg, #6b21a8, #1a0a2e);
+            padding: 50px 30px 70px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .profile-avatar {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            border: 4px solid #a855f7;
+            object-fit: cover;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 0 40px rgba(168, 85, 247, 0.6);
+            animation: avatarFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes avatarFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        .profile-name {
+            font-size: 32px;
+            font-weight: bold;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+            background: linear-gradient(135deg, #ffffff, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .profile-role {
+            font-size: 14px;
+            color: #a855f7;
+            margin-top: 8px;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .profile-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 12px;
+            padding: 6px 16px;
+            background: rgba(168, 85, 247, 0.2);
+            border: 1px solid #a855f7;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #a855f7;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== CUERPO DEL PERFIL ===== */
+        .profile-body {
+            padding: 40px 30px 30px;
+            position: relative;
+            margin-top: -40px;
+            background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+            border-radius: 30px 30px 0 0;
+        }
+
+        .section-title {
+            font-size: 12px;
+            color: #525252;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, #6b21a8, transparent);
+        }
+
+        /* ===== WHATSAPP ===== */
+        .whatsapp-section {
+            margin-bottom: 30px;
+        }
+
+        .whatsapp-btn {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            border: none;
+            border-radius: 18px;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-bottom: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .whatsapp-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .whatsapp-btn:hover::before {
+            left: 100%;
+        }
+
+        .whatsapp-btn:hover {
+            transform: translateX(8px);
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+        }
+
+        .whatsapp-btn .icon {
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+
+        .whatsapp-btn .info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            flex: 1;
+        }
+
+        .whatsapp-btn .label {
+            font-size: 11px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .whatsapp-btn .number {
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .whatsapp-btn .arrow {
+            font-size: 20px;
+            opacity: 0.7;
+            transition: transform 0.3s;
+        }
+
+        .whatsapp-btn:hover .arrow {
+            transform: translateX(5px);
+        }
+
+        /* ===== REDES SOCIALES ===== */
+        .social-section {
+            margin-bottom: 20px;
+        }
+
+        .social-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .social-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 20px 10px;
+            background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
+            border: 2px solid #6b21a8;
+            border-radius: 16px;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(107, 33, 168, 0.3);
+        }
+
+        .social-btn .icon {
+            font-size: 32px;
+        }
+
+        .social-btn.discord {
+            border-color: #5865F2;
+        }
+
+        .social-btn.discord:hover {
+            background: linear-gradient(135deg, #5865F2, #4752C4);
+            border-color: #5865F2;
+        }
+
+        .social-btn.tiktok {
+            border-color: #ff0050;
+        }
+
+        .social-btn.tiktok:hover {
+            background: linear-gradient(135deg, #ff0050, #00f2ea);
+            border-color: #ff0050;
+        }
+
+        .social-btn.twitch {
+            border-color: #9146ff;
+        }
+
+        .social-btn.twitch:hover {
+            background: linear-gradient(135deg, #9146ff, #772ce8);
+            border-color: #9146ff;
+        }
+
+        /* ===== FOOTER ===== */
+        .profile-footer {
+            text-align: center;
+            padding: 25px;
+            color: #525252;
+            font-size: 13px;
+            border-top: 1px solid #2d2d2d;
+        }
+
+        .profile-footer span {
+            color: #a855f7;
+            animation: heartbeat 1.5s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* ===== BOTÓN VOLVER ===== */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(107, 33, 168, 0.3);
+            border: 1px solid #6b21a8;
+            border-radius: 25px;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-btn:hover {
+            background: #6b21a8;
+            transform: translateX(-5px);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 480px) {
+            .profile-header {
+                padding: 40px 20px 60px;
+            }
+
+            .profile-avatar {
+                width: 100px;
+                height: 100px;
+            }
+
+            .profile-name {
+                font-size: 26px;
+            }
+
+            .social-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .social-btn {
+                flex-direction: row;
+                justify-content: center;
+                padding: 15px;
+            }
+
+            .whatsapp-btn .number {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Partículas -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Botón Volver -->
+    <a href="../index.html" class="back-btn">← Volver a VideoDiv</a>
+
+    <!-- Perfil -->
+    <div class="profile-container">
+        <div class="profile-card">
+            
+            <div class="profile-header">
+                <img src="perfil.png" alt="Creador" class="profile-avatar">
+                <div class="profile-name">Creador</div>
+                <div class="profile-role">Fundador de VideoDiv</div>
+                <div class="profile-badge">✨ Desarrollador Web</div>
+            </div>
+
+            <div class="profile-body">
+                
+                <!-- WhatsApp -->
+                <div class="whatsapp-section">
+                    <div class="section-title">📱 WhatsApp</div>
+                    
+                    <a href="https://wa.me/17089309726?text=Hola%20quiero%20hablar%20sobre%20VideoDiv" target="_blank" class="whatsapp-btn">
+                        <span class="icon">💬</span>
+                        <div class="info">
+                            <span class="label">Número Principal</span>
+                            <span class="number">+1 (708) 930-9726</span>
+                        </div>
+                        <span class="arrow">→</span>
+                    </a>
+
+                    <a href="https://wa.me/6287774831869?text=Hola%20quiero%20hablar%20sobre%20VideoDiv" target="_blank" class="whatsapp-btn">
+                        <span class="icon">💬</span>
+                        <div class="info">
+                            <span class="label">Número Secundario</span>
+                            <span class="number">+62 877-7483-1869</span>
+                        </div>
+                        <span class="arrow">→</span>
+                    </a>
+                </div>
+
+                <!-- Redes Sociales -->
+                <div class="social-section">
+                    <div class="section-title">🌐 Redes Sociales</div>
+                    <div class="social-grid">
+                        <a href="https://discord.com/users/keri05208" target="_blank" class="social-btn discord">
+                            <span class="icon">💜</span>
+                            <span>Discord</span>
+                        </a>
+                        <a href="https://www.tiktok.com/@rezereze.md?_r=1&_t=ZP-96Rv3h8hDzT" target="_blank" class="social-btn tiktok">
+                            <span class="icon">🎵</span>
+                            <span>TikTok</span>
+                        </a>
+                        <a href="https://www.twitch.tv/cuervita889" target="_blank" class="social-btn twitch">
+                            <span class="icon">📺</span>
+                            <span>Twitch</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="profile-footer">
+                Hecho con <span>💜</span> para VideoDiv
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Crear partículas
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 6) + 's';
+                particle.style.width = (Math.random() * 4 + 2) + 'px';
+                particle.style.height = particle.style.width;
+                container.appendChild(particle);
+            }
+        }
+
+        createParticles();
+    </script>
+
+</body>
+</html>
+
